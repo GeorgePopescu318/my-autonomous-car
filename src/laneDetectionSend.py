@@ -16,8 +16,12 @@ xm_per_pix = 0.35 / 360
 # Get path to the current working directory
 # CWD_PATH = os.getcwd()
 
+#  OLD trapez
+src = [[100, 225],[0, 385],[639, 385],[475, 225]]
 
 
+# rectangle
+# src = [[0, 225],[0, 385],[639, 385],[639, 225]] 
 ################################################################################
 ######## START - FUNCTIONS TO PERFORM IMAGE PROCESSING #########################
 ################################################################################
@@ -41,8 +45,8 @@ def processImage(inpImage):
     #bgr = cv2.cvtColor(inpImage, cv2.COLOR_BGGR2BGR)
 
     #define the lower and upper white for the mask creation
-    lower_white = np.array([0, 160, 160,10])
-    upper_white = np.array([255, 255, 255,255])
+    lower_white = np.array([0, 160,10])
+    upper_white = np.array([255, 255, 255])
     
     #creates a mask that has 255 for values lower_white < px < upper_white else 0
     mask = cv2.inRange(inpImage, lower_white, upper_white)
@@ -67,10 +71,10 @@ def processImage(inpImage):
     canny = cv2.Canny(blur, 40, 60)
 
     # Display the processed images
-    cv2.imshow("Image", inpImage)
+    # cv2.imshow("Image", inpImage)
     #cv2.imshow("HLS Filtered", hls_result)
     #cv2.imshow("Grayscale", gray)
-    cv2.imshow("Thresholded", thresh)
+    # cv2.imshow("Thresholded", thresh)
     #cv2.imshow("Blurred", blur)
     #cv2.imshow("Canny Edges", canny)
     #print(thresh.shape)
@@ -84,6 +88,10 @@ def processImage(inpImage):
 #### START - FUNCTION TO APPLY PERSPECTIVE WARP ################################
 
 def viewPerspectiveWarp(inpImage):
+
+    global src
+    srcc =src
+    # print(img_size)
     img_size = (inpImage.shape[1], inpImage.shape[0])
     # frame = cv2.resize(inpImage,(640,480))
     #TEST Values
@@ -99,23 +107,24 @@ def viewPerspectiveWarp(inpImage):
     
     #TEST Values
     # Perspective points to be warped
-    src = [100, 225],[0, 350],[630, 350],[500, 225]
+    
 
     # # Window to be shown
     dst = np.float32([[0, 0],
-                      [0, img_size[1]],
-                      [img_size[0], img_size[1]],
+                      [0, img_size[0]],
+                      [img_size[1], img_size[0]],
                       [img_size[1], 0]])
     
-    cv2.circle(inpImage,src[0],5,(0,0,255),-1)
-    cv2.circle(inpImage,src[1],5,(0,0,255),-1)
-    cv2.circle(inpImage,src[2],5,(0,0,255),-1)
-    cv2.circle(inpImage,src[3],5,(0,0,255),-1)
+    cv2.circle(inpImage,srcc[0],5,(0,0,255),-1)
+    cv2.circle(inpImage,srcc[1],5,(0,0,255),-1)
+    cv2.circle(inpImage,srcc[2],5,(0,0,255),-1)
+    cv2.circle(inpImage,srcc[3],5,(0,0,255),-1)
 
     cv2.imshow("Frame",inpImage)
     
 
 def perspectiveWarp(inpImage):
+    global src
 
     # Get image size
     #width and height
@@ -137,13 +146,13 @@ def perspectiveWarp(inpImage):
     
     #TRACK Values
     # Perspective points to be warped
-    src = np.float32([[50, 225],[0, 350],[630, 350],[500, 225]])
+    srcc = np.float32(src)
 
     # # Window to be shown
     dst = np.float32([[0, 0],
-                      [0, img_size[1]],
-                      [img_size[0], img_size[1]],
-                      [img_size[1], 0]])
+                      [0, 480],
+                      [640, 480],
+                      [640, 0]])
 
     #TEST Values
     # Perspective points to be warped
@@ -169,10 +178,10 @@ def perspectiveWarp(inpImage):
     #                   [1200, 710]])
 
     # Matrix to warp the image for birdseye window
-    matrix = cv2.getPerspectiveTransform(src, dst)
+    matrix = cv2.getPerspectiveTransform(srcc, dst)
 
     # Inverse matrix to unwarp the image for final window
-    minv = cv2.getPerspectiveTransform(dst, src)
+    minv = cv2.getPerspectiveTransform(dst, srcc)
 
     #creates the birdseye view of the image
     birdseye = cv2.warpPerspective(inpImage, matrix, img_size)
@@ -465,8 +474,8 @@ def draw_lane_lines(original_image, warped_image, Minv, draw_info):
     cv2.fillPoly(color_warp, np.int_([pts_mean]), (0, 255, 255))
 
     newwarp = cv2.warpPerspective(color_warp, Minv, (original_image.shape[1], original_image.shape[0]))
-    # result = cv2.addWeighted(original_image, 1, newwarp, 0.3, 0)
-    result = 0
+    result = cv2.addWeighted(original_image, 1, newwarp, 0.3, 0)
+    # result = 0
 
     return pts_mean, result
 #### END - FUNCTION TO VISUALLY SHOW DETECTED LANES AREA #######################
@@ -535,7 +544,7 @@ def addText(img, radius, direction, deviation, devDirection):
 #### START - LOOP TO PLAY THE INPUT IMAGE ######################################
 # while True:
 
-def detectLane(frame):
+def detect_lane(frame):
     # _, frame = image.read()
     # frame = image
 
@@ -545,7 +554,7 @@ def detectLane(frame):
     # Provide this function with:
     # 1- an image to apply perspective warping (frame)
     birdView, birdViewL, birdViewR, minverse = perspectiveWarp(frame)
-    # viewPerspectiveWarp(frame)
+    #viewPerspectiveWarp(frame)
 
     # Apply image processing by calling the "processImage()" function
     # Then assign their respective variables (img, hls, grayscale, thresh, blur, canny)
@@ -578,19 +587,20 @@ def detectLane(frame):
 
 
     # # Filling the area of detected lanes with green
-    meanPts, _ = draw_lane_lines(frame, thresh, minverse, draw_info)
+    meanPts, result = draw_lane_lines(frame, thresh, minverse, draw_info)
 
 
     deviation, directionDev = offCenter(meanPts, frame)
     
 
     # # Adding text to our final image
-    #finalImg = addText(result, curveRad, curveDir, deviation, directionDev)
+    finalImg = addText(result, curveRad, curveDir, deviation, directionDev)
 
     # # # # Displaying final image
-    #cv2.imshow("Final", finalImg)
+    # cv2.imshow("Final", finalImg)
 
-    return deviation
+    # return deviation
+    return deviation,birdView,thresh,finalImg
     # return 0
 
     # Wait for the ENTER key to be pressed to stop playback
