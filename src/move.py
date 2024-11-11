@@ -5,6 +5,8 @@ from scipy import optimize
 from matplotlib import pyplot as plt, cm, colors
 import laneDetectionSend as LD
 
+
+
 CWD_PATH = os.getcwd()
 def readVideo():
 
