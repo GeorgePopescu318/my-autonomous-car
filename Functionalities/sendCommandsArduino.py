@@ -8,11 +8,11 @@ time.sleep(2)  # Wait for the connection to initialize
 # Track the previous command
 old_command = None
 
-def send_motor_command(motorId, direction, speedPercent):
+def send_motor_command(motorSide, direction, speedPercent):
     global old_command
 
     # Build the new command
-    new_command = f"{motorId},{direction},{speedPercent}\n"
+    new_command = f"{motorSide},{direction},{speedPercent}\n"   
 
     # Only send if different from the last command
     if new_command != old_command:
