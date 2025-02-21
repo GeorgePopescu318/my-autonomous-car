@@ -83,14 +83,8 @@ void processCommand(char command[32]) {
       (direction != 'F' && direction != 'B')) {
     return;
   }
-  
-  // Validate speed range
-  if (speedPercent < 0 || speedPercent > 100) {
-    return;
-  }
-  
-  // Map the 0-100 speed to a PWM value (0-255)
-  int pwmValue = map(speedPercent, 0, 100, 0, 255);
+
+  int pwmValue = speedPercent;
   
   // Control the selected motor(s)
   if (motorSelection == 'L' || motorSelection == 'B') {
