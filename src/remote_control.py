@@ -4,7 +4,7 @@ import time
 import matplotlib.pyplot as plt
 from picamera2 import Picamera2
 from picamera2.encoders import MJPEGEncoder, Quality
-from get_middle_of_road import get_middle
+from Functionalities.get_middle_of_road import get_middle
 
 picam2 = Picamera2()
 picam2.configure(picam2.create_preview_configuration(raw={"format": 'SBGGR12_CSI2P', "size": (1000, 1000)}))

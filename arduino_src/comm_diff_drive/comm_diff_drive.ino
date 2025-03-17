@@ -87,10 +87,10 @@ void processCommand(char command[32]) {
   int pwmValue = speedPercent;
   
   // Control the selected motor(s)
-  if (motorSelection == 'L' || motorSelection == 'B') {
+  if (motorSelection == 'R' || motorSelection == 'B') {
     controlMotor(in1, in2, enA, direction, pwmValue);
   }
-  if (motorSelection == 'R' || motorSelection == 'B') {
+  if (motorSelection == 'L' || motorSelection == 'B') {
     controlMotor(in3, in4, enB, direction, pwmValue);
   }
 }
@@ -104,10 +104,10 @@ void controlMotor(int inPin1, int inPin2, int enPin, char direction, int pwm) {
     analogWrite(enPin, 0);
   } else {
     // Set the motor direction: 'F' for forward, 'B' for backward
-    if (direction == 'F') {
+    if (direction == 'B') {
       digitalWrite(inPin1, HIGH);
       digitalWrite(inPin2, LOW);
-    } else if (direction == 'B') {
+    } else if (direction == 'F') {
       digitalWrite(inPin1, LOW);
       digitalWrite(inPin2, HIGH);
     }

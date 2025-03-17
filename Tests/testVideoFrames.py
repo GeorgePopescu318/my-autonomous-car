@@ -4,7 +4,7 @@ import time
 import matplotlib.pyplot as plt
 vidcap = cv2.VideoCapture("NewCameraRodNewTrack.mp4")
 success, image = vidcap.read()
-
+print("aa")
 while success:
 
     success, frame = vidcap.read()
