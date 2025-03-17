@@ -1,4 +1,4 @@
-import serial
+import serial # type: ignore
 import time
 
 # Configure the serial connection (update '/dev/ttyACM0' as needed)

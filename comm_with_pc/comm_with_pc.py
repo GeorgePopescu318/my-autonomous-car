@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import socket
-from  ..comm_with_arduino import send_commands_arduino as sda
+import send_commands_arduino
 def start_server(host='0.0.0.0', port=12345):
     # Create a TCP/IP socket
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -29,7 +29,7 @@ def start_server(host='0.0.0.0', port=12345):
                     # Decode and print the received data
                     message = data.decode().strip()
                     motorSide, direction, speedPercent = message.split(',')
-                    sda.send_motor_command(motorSide,direction,speedPercent)
+                    send_commands_arduino.send_motor_command(motorSide,direction,speedPercent)
                     print("Received:", message)
                     
                     # Optionally, send a response back (echo the data)
